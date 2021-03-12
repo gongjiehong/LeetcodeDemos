@@ -22,21 +22,42 @@ class Solution {
             return 0
         }
         
-        getValidSubBST(root)
+//        getValidSubBST(root)
         
         return maxSum
     }
     
-    func getValidSubBST(_ root: TreeNode?) {
-        guard let root = root else {
-            return
-        }
-        if isValidBST(root) {
-            maxSum = max(maxSum, sumBST(root))
+    func getValidSubBST(_ root: TreeNode?, min: TreeNode?, max: TreeNode?) -> TreeNode? {
+        // 空树，直接返回true
+        guard let node = root else {
+            return root
         }
         
-        getValidSubBST(root.left)
-        getValidSubBST(root.right)
+        // 右子树，如果有节点值小于等于最小节点，则不是合法BST，此时max肯定为空
+        if let min = min, min.val >= node.val {
+            return nil
+        }
+        
+        // 左子树，如果有节点值大于等于最大节点，则不是合法BST，此时min肯定为空
+        if let max = max, max.val <= node.val {
+            return nil
+        }
+        
+        // 这里拆分开写，实际过程中直接在return写方法，尾递归对栈的占用会优秀很多
+        // 验证左子树，min 始终为nil
+        let leftBST = getValidSubBST(node.left, min: min, max: node)
+        
+        // 验证右子树，max 始终为nil
+        let rightBST = getValidSubBST(node.right, min: node, max: max)
+        
+        if leftBST != nil {
+            print(leftBST?.val)
+        }
+        
+        if rightBST != nil {
+            print(leftBST?.val)
+        }
+        return leftBST
     }
     
     func sumBST(_ root: TreeNode?) -> Int {
@@ -81,3 +102,4 @@ class Solution {
         return leftIsValid && rightIsValid
     }
 }
+
